@@ -37,9 +37,7 @@
             this.правкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.анализToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.проверкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.тёмнаяТемаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.lineNumber1 = new Validator.LineNumber();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,8 +49,7 @@
             this.файлToolStripMenuItem,
             this.правкаToolStripMenuItem,
             this.анализToolStripMenuItem,
-            this.проверкаToolStripMenuItem,
-            this.тёмнаяТемаToolStripMenuItem});
+            this.проверкаToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(8, 5, 0, 2);
@@ -114,41 +111,23 @@
             this.проверкаToolStripMenuItem.Size = new System.Drawing.Size(90, 24);
             this.проверкаToolStripMenuItem.Text = "Проверка";
             // 
-            // тёмнаяТемаToolStripMenuItem
+            // lineNumber1
             // 
-            this.тёмнаяТемаToolStripMenuItem.Name = "тёмнаяТемаToolStripMenuItem";
-            this.тёмнаяТемаToolStripMenuItem.Size = new System.Drawing.Size(110, 24);
-            this.тёмнаяТемаToolStripMenuItem.Text = "Тёмная тема";
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox1.Font = new System.Drawing.Font("Consolas", 11F);
-            this.richTextBox1.Location = new System.Drawing.Point(48, 34);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.richTextBox1.Size = new System.Drawing.Size(752, 404);
-            this.richTextBox1.TabIndex = 2;
-            this.richTextBox1.Text = "";
-            // 
-            // richTextBox2
-            // 
-            this.richTextBox2.Location = new System.Drawing.Point(0, 34);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.ReadOnly = true;
-            this.richTextBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            this.richTextBox2.Size = new System.Drawing.Size(42, 404);
-            this.richTextBox2.TabIndex = 3;
-            this.richTextBox2.Text = "";
+            this.lineNumber1.BackColor = System.Drawing.SystemColors.Window;
+            this.lineNumber1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lineNumber1.Location = new System.Drawing.Point(0, 31);
+            this.lineNumber1.Name = "lineNumber1";
+            this.lineNumber1.Size = new System.Drawing.Size(800, 419);
+            this.lineNumber1.TabIndex = 0;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.richTextBox2);
-            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.lineNumber1);
             this.Controls.Add(this.menuStrip1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Валидатор";
@@ -167,12 +146,10 @@
         private System.Windows.Forms.ToolStripMenuItem сохранитьToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem новыйToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem сохранитьКакToolStripMenuItem;
-        private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.ToolStripMenuItem правкаToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem анализToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem проверкаToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem тёмнаяТемаToolStripMenuItem;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        private LineNumber lineNumber1;
     }
 }
 

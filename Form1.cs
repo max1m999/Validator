@@ -4,11 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Validator
@@ -19,15 +16,14 @@ namespace Validator
         {
             InitializeComponent();
         }
-
         private void Form1_Load(object sender, EventArgs e)
         {
-            richTextBox1.BackColor = ColorTranslator.FromHtml("#222E33");
-            richTextBox1.ForeColor = Color.White;
-            richTextBox1.Font = new Font("Tahoma", 12, FontStyle.Regular);
-            richTextBox1.BorderStyle = BorderStyle.None;
+            lineNumber1.RichTextBox.BackColor = ColorTranslator.FromHtml("#00264F");
+            lineNumber1.RichTextBox.ForeColor = ColorTranslator.FromHtml("#F6E6AE");
+            lineNumber1.RichTextBox.Font = new Font("Consolas", 14, FontStyle.Regular);
+            lineNumber1.RichTextBox.BorderStyle = BorderStyle.None;
+            lineNumber1.BorderStyle = BorderStyle.None;
         }
-
         private void открытьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -40,7 +36,7 @@ namespace Validator
                 {
                     string filePath = openFileDialog.FileName;
                     StreamReader sr = new StreamReader(filePath, Encoding.GetEncoding(DetectEncoding(filePath)));
-                    richTextBox1.Text = sr.ReadToEnd();
+                    lineNumber1.RichTextBox.Text = sr.ReadToEnd();
                 }
             }
         }
