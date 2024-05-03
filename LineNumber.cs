@@ -28,17 +28,15 @@ namespace Validator
         }
     }
 
-    public class LineNumberStrip : Control
+    public class LineNumberStrip : RichTextBox
     {
         private BufferedGraphics _bufferedGraphics;
         private readonly BufferedGraphicsContext _bufferContext = BufferedGraphicsManager.Current;
         private readonly RichTextBox _richTextBox;
         private Brush _fontBrush;
-        private Brush _offsetBrush = new SolidBrush(Color.DarkSlateGray);
-        private Pen _penBoxedLine = Pens.LightGray;
         private float _fontHeight;
         private const float _FONT_MODIFIER = 0.09f;
-        private bool _hideWhenNoLines, _speedBump;
+        private bool _speedBump;
         private const int _DRAWING_OFFSET = 1;
         private int _lastYPos = -1, _dragDistance, _lastLineCount;
         private int _scrollingLineIncrement = 5, _numPadding = 10;
@@ -47,14 +45,13 @@ namespace Validator
         {
             _richTextBox = plainTextBox;
             plainTextBox.TextChanged += _richTextBox_TextChanged;
-            plainTextBox.FontChanged += _richTextBox_FontChanged;
             plainTextBox.VScroll += _richTextBox_VScroll;
 
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
                 ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
             this.Size = new Size(10, 10);
-            base.BackColor = System.Drawing.ColorTranslator.FromHtml("#222E33");
+            base.BackColor = ColorTranslator.FromHtml("#222E33");
             base.Dock = DockStyle.Left;
             base.ForeColor = Color.LightGray; 
 
@@ -145,41 +142,40 @@ namespace Validator
 
         private void SetControlWidth()
         {
-            // Make the line numbers virtually invisble when no lines present
-            if (_richTextBox.Lines.Length.Equals(0) && _hideWhenNoLines)
-            {
-                this.Width = 0;
-            }
-            else
-            {
-                this.Width = WidthOfWidestLineNumber + _numPadding * 2;
-            }
-
+            this.Width = WidthOfWidestLineNumber + _numPadding * 2;
             this.Invalidate(false);
         }
         #endregion
 
         #region Event Handlers
-        private void _richTextBox_FontChanged(object sender, EventArgs e)
-        {
-            SetFontHeight();
-            SetControlWidth();
-        }
-
-        /// <summary>
-        /// Use this event to look for changes in the line count
-        /// </summary>
         private void _richTextBox_TextChanged(object sender, EventArgs e)
         {
-            // If word wrap is enabled do not check for line changes as new lines
-            // from word wrapping will not raise the line changed event
 
-            // Last line count is always equal to current when words are wrapped
-            if (_richTextBox.WordWrap || !_lastLineCount.Equals(_richTextBox.Lines.Length))
+            if (!_lastLineCount.Equals(_richTextBox.Lines.Length))
             {
                 SetControlWidth();
             }
+            if (_lastLineCount == 0 || _lastLineCount != _richTextBox.Lines.Length)
+            {
+                _bufferedGraphics.Graphics.Clear(this.BackColor);
+                int firstIndex = _richTextBox.GetCharIndexFromPosition(Point.Empty);
+                int firstLine = _richTextBox.GetLineFromCharIndex(firstIndex);
+                Point bottomLeft = new Point(0, this.ClientRectangle.Height);
+                int lastIndex = _richTextBox.GetCharIndexFromPosition(bottomLeft);
+                int lastLine = _richTextBox.GetLineFromCharIndex(lastIndex);
 
+                for (int i = firstLine; i <= lastLine + 1; i++)
+                {
+                    int charYPos = GetPositionOfRtbLine(i);
+                    if (charYPos.Equals(-1)) continue;
+                    float yPos = GetPositionOfRtbLine(i) + _DRAWING_OFFSET;
+
+                    PointF stringPos = new PointF(_numPadding, yPos);
+                    string line = (i + 1).ToString(CultureInfo.InvariantCulture);
+                    _bufferedGraphics.Graphics.DrawString(line, this.Font, _fontBrush, stringPos);
+
+                }
+            }
             _lastLineCount = _richTextBox.Lines.Length;
         }
 
@@ -197,40 +193,20 @@ namespace Validator
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            _bufferedGraphics.Graphics.Clear(this.BackColor);
-
-            int firstIndex = _richTextBox.GetCharIndexFromPosition(Point.Empty);
-            int firstLine = _richTextBox.GetLineFromCharIndex(firstIndex);
-            Point bottomLeft = new Point(0, this.ClientRectangle.Height);
-            int lastIndex = _richTextBox.GetCharIndexFromPosition(bottomLeft);
-            int lastLine = _richTextBox.GetLineFromCharIndex(lastIndex);
-
-            for (int i = firstLine; i <= lastLine + 1; i++)
-            {
-                int charYPos = GetPositionOfRtbLine(i);
-                if (charYPos.Equals(-1)) continue;
-                float yPos = GetPositionOfRtbLine(i) + _DRAWING_OFFSET;
-
-                PointF stringPos = new PointF(_numPadding, yPos);
-                string line = (i + 1).ToString(CultureInfo.InvariantCulture);
-                // i + 1 to start the line numbers at 1 instead of 0
-                _bufferedGraphics.Graphics.DrawString(line, this.Font, _fontBrush, stringPos);
-
-            }
-
             _bufferedGraphics.Render(pevent.Graphics);
         }
 
         private void _richTextBox_VScroll(object sender, EventArgs e)
         {
+            this.ScrollBars = _richTextBox.ScrollBar;
+            //----------------------------------------------------------------------------
             // Decrease the paint calls by one half when there is more than 3000 lines
-            if (_richTextBox.Lines.Length > 3000 && _speedBump)
-            {
-                _speedBump = !_speedBump;
-                return;
-            }
-
-            this.Invalidate(false);
+            //if (_richTextBox.Lines.Length > 3000 && _speedBump)
+            //{
+            //    _speedBump = !_speedBump;
+            //    return;
+            //}
+            //this.Invalidate(false);
         }
         #endregion
 
@@ -273,16 +249,6 @@ namespace Validator
                 return 1;
             }
         }
-
-        /// <summary>
-        /// Make sure this is set according to the users left to right layout
-        /// </summary>
-        public bool DockToRight
-        {
-            get { return (this.Dock == DockStyle.Right); }
-            set { this.Dock = (value) ? DockStyle.Right : DockStyle.Left; }
-        }
-
         [Category("Layout")]
         [Description("Gets or sets the spacing from the left and right of the numbers to the let and right of the control")]
         public int NumberPadding
@@ -297,45 +263,6 @@ namespace Validator
                     SetControlWidth();
                 }
             }
-        }
-        [Category("Appearance")]
-        public Color BoxedLineColor
-        {
-            get { return _penBoxedLine.Color; }
-            set
-            {
-                _penBoxedLine = new Pen(value);
-                this.Invalidate(false);
-            }
-        }
-
-        [Category("Appearance")]
-        public Color OffsetColor
-        {
-            get { return new Pen(_offsetBrush).Color; }
-            set
-            {
-                _offsetBrush = new SolidBrush(value);
-                this.Invalidate(false);
-            }
-        }
-
-        [Category("Behavior")]
-        public bool HideWhenNoLines
-        {
-            get { return _hideWhenNoLines; }
-            set { _hideWhenNoLines = value; }
-        }
-
-        /// <summary>
-        /// Hide this, The right to left layout property will determine 
-        /// the dock style
-        /// </summary>
-        [Browsable(false)]
-        public override DockStyle Dock
-        {
-            get { return base.Dock; }
-            set { base.Dock = value; }
         }
 
         /// <summary>
