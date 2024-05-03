@@ -28,8 +28,6 @@ namespace Validator
         }
     }
 
-    public enum LineNumberStyle { None, OffsetColors, Boxed };
-
     public class LineNumberStrip : Control
     {
         private BufferedGraphics _bufferedGraphics;
@@ -37,7 +35,6 @@ namespace Validator
         private readonly RichTextBox _richTextBox;
         private Brush _fontBrush;
         private Brush _offsetBrush = new SolidBrush(Color.DarkSlateGray);
-        private LineNumberStyle _style;
         private Pen _penBoxedLine = Pens.LightGray;
         private float _fontHeight;
         private const float _FONT_MODIFIER = 0.09f;
@@ -214,21 +211,6 @@ namespace Validator
                 if (charYPos.Equals(-1)) continue;
                 float yPos = GetPositionOfRtbLine(i) + _DRAWING_OFFSET;
 
-                if (_style.Equals(LineNumberStyle.OffsetColors))
-                {
-                    if (i % 2 == 0)
-                    {
-                        _bufferedGraphics.Graphics.FillRectangle(_offsetBrush, 0, yPos, this.Width,
-                            _fontHeight * _FONT_MODIFIER * 10);
-                    }
-                }
-                else if (_style.Equals(LineNumberStyle.Boxed))
-                {
-                    PointF endPos = new PointF(this.Width, yPos + _fontHeight - _DRAWING_OFFSET * 3);
-                    PointF startPos = new PointF(0, yPos + _fontHeight - _DRAWING_OFFSET * 3);
-                    _bufferedGraphics.Graphics.DrawLine(_penBoxedLine, startPos, endPos);
-                }
-
                 PointF stringPos = new PointF(_numPadding, yPos);
                 string line = (i + 1).ToString(CultureInfo.InvariantCulture);
                 // i + 1 to start the line numbers at 1 instead of 0
@@ -316,18 +298,6 @@ namespace Validator
                 }
             }
         }
-
-        [Category("Appearance")]
-        public LineNumberStyle Style
-        {
-            get { return _style; }
-            set
-            {
-                _style = value;
-                this.Invalidate(false);
-            }
-        }
-
         [Category("Appearance")]
         public Color BoxedLineColor
         {
